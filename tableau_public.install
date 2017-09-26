@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Install file for the link module.
+ */
+
+/**
+ * Upgrade notes:
+ * Things we need to make sure work when upgrading from Drupal 6 to Drupal 7:
+ */
+
+/**
+ * Implements hook_field_schema().
+ */
+function tableau_public_field_schema($field) {
+  switch($field['type']) {
+    case 'tableau_public_info':
+      $columns = array(
+        'title' => array(
+          'type' => 'varchar',
+          'length' => '255',
+          'not null' => TRUE,
+        ),
+        'dynamic' => array(
+          'type' => 'bool',
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'short' => array(
+          'type' => 'varchar',
+          'length' => '255',
+          'not null' => TRUE,
+        ),
+        'viz' => array(
+          'type' => 'varchar',
+          'length' => '255',
+          'not null' => TRUE,
+        ),
+      );
+      break;
+    case 'tableau_public_sheets':
+      $columns = array(
+        'name' => array(
+          'type' => 'varchar',
+          'length' => '256',
+          'not null' => TRUE,
+        ),
+        'mobile' => array(
+          'type' => 'bool',
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+      );
+      break;
+  }
+  return $columns;
+}
