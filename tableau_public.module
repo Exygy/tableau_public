@@ -3,3 +3,64 @@
 * @file
 * Loads visualizations from Tableau Public with a simple url
 */
+
+/**
+ * Grabs data from node fields; adds to Drupal.setting js object.
+ *
+ * @param int $nid
+ *   Integer that refers to a node ID.  Function will automatically pull the
+ *   correct fields from the node using the nid.
+ */
+function tableau_public_add_viz($nid) {
+  drupal_add_js('https://public.tableau.com/javascripts/api/tableau-2.min.js', array('type' => 'external', 'scope' => 'footer'));
+
+  // store tableau viz, sheets, & mobile config for jQuery.extend
+  $node = node_load($nid);
+  $tableau_data = array();
+
+  // check all interactives on the page, see if any of them are Tableau
+  foreach ($node->field_chart['und'] as $item) {
+    $value = $item['value'];
+    $fc_wrapper = entity_load('field_collection_item', array($value));
+    $loaded = $fc_wrapper[$value];
+
+    // only grab it if it's tableau
+    if (!empty($loaded->field_tableau)) {
+      // Interactive title
+      $title = $loaded->field_interactive_title['und'][0]['safe_value'];
+      // Unique identifier to create a placeholder div for Tableau
+      $shorty = $loaded->field_interactive['und'][0]['safe_value'];
+      // Boolean variable to determine whether this Tableau interactive should
+      // have a dynamic title
+      $dynamic = $loaded->field_dynamic_title['und'][0]['value'];
+      $sheets = array();
+
+      // individual Tableau sheets are stored as a field collection within a
+      // field collection.  Go through each sheet individually.
+      foreach ($loaded->field_tableau_sheets['und'] as $sheet_reference) {
+        $sheet_id = $sheet_reference['value'];
+        $sheet = entity_load('field_collection_item',
+          array($sheet_id));
+        array_push($sheets, array(
+          'name'   => $sheet[$sheet_id]->field_sheet_url['und'][0]['safe_value'],
+          'phone_layout' => $sheet[$sheet_id]->field_phone_layout['und'][0]['value']
+        ));
+      }
+
+      // We have a single Tableau viz url, with an array of individual sheets.
+      // Add this to the array of Tableau data
+      $tableau_viz = $loaded->field_tableau['und'][0]['safe_value'];
+
+      array_push($tableau_data, array(
+        'title'         => $title,
+        'id'            => $shorty,
+        'url'           => $tableau_viz,
+        'dynamic_title' => $dynamic,
+        'sheets'        => $sheets
+      ));
+    }
+  }
+
+  // Finally, push the tableau_data array to jQuery.extend(Drupal.settings)
+  drupal_add_js(array('tableau_data' => $tableau_data), 'setting');
+}
