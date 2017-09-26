@@ -29,7 +29,7 @@ function tableau_public_field_info() {
 /**
  * Implements hook_field_widget_info().
  */
-function link_field_widget_info() {
+function tableau_public_field_widget_info() {
   return array(
     'tableau_public_info' => array(
       'label' => 'Tableau Visualization',
@@ -52,6 +52,55 @@ function tableau_public_field_is_empty($item, $field) {
   $key = array_shift($temp);
   return empty($item[$key]);
 }
+
+/**
+ * Implements hook_field_field_formatter_info().
+ */
+function tableau_public_field_field_formatter_info() {
+  return array(
+    'tableau_public_info' => array(
+      'label' => t('Tableau Visualization'),
+      'field types' => array('tableau_public_info'),
+    ),
+    'tableau_public_sheets' => array(
+      'label' => t('Tableau Sheets'),
+      'field types' => array('tableau_public_sheets'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_field_formatter_view().
+ */
+function tableau_public_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  switch ($display['type']) {
+    case 'tableau_public_info':
+      $headers = array(
+        t('Title'),
+        t('Dynamic Title'),
+        t('Short Code'),
+        t('Vizualization URL'),
+      );
+
+      $element[0]['#theme'] = 'table';
+      $element[0]['#data'] = array('header' => $headers, 'rows' => $items);
+      break;
+
+    case 'tableau_public_sheets':
+      $headers = array(
+        t('Name'),
+        t('Mobile layout'),
+      );
+
+      $element[0]['#theme'] = 'table';
+      $element[0]['#data'] = array('header' => $headers, 'rows' => $items);
+      break;
+  }
+  return $element;
+}
+
 
 /**
  * Grabs data from node fields; adds to Drupal.setting js object.

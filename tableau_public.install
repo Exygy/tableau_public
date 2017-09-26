@@ -14,6 +14,8 @@
  * Implements hook_field_schema().
  */
 function tableau_public_field_schema($field) {
+  $columns = array();
+
   switch($field['type']) {
     case 'tableau_public_info':
       $columns = array(
@@ -21,11 +23,6 @@ function tableau_public_field_schema($field) {
           'type' => 'varchar',
           'length' => '255',
           'not null' => TRUE,
-        ),
-        'dynamic' => array(
-          'type' => 'bool',
-          'not null' => TRUE,
-          'default' => 0,
         ),
         'short' => array(
           'type' => 'varchar',
@@ -46,13 +43,10 @@ function tableau_public_field_schema($field) {
           'length' => '256',
           'not null' => TRUE,
         ),
-        'mobile' => array(
-          'type' => 'bool',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
       );
       break;
   }
-  return $columns;
+  return array(
+    'columns' => $columns,
+  );
 }
