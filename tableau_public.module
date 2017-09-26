@@ -1,0 +1,5 @@
+<?php
+/**
+* @file
+* Loads visualizations from Tableau Public with a simple url
+*/

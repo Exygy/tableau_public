@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/../mtc-vital-signs/includes" />
+      <path value="$PROJECT_DIR$/../mtc-vital-signs/modules" />
+      <path value="$PROJECT_DIR$/../mtc-vital-signs/sites/all/modules" />
+    </include_path>
+  </component>
+</project>
