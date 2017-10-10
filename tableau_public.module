@@ -12,9 +12,9 @@ function tableau_public_field_info() {
     'tableau_public_info' => array(
       'label' => t('Tableau Visualization'),
       'description' => t("Basic information about a Tableau viz"),
-      'settings' => array('allowed_values' => array(), 'allowed_values_function' => ''),
-      'default_widget' => 'tableau_public_info',
-      'default_formatter' => 'tableau_public_info', // This doesn't *have* to be the same name as default_widget's value, this is only coincidence
+      'settings' => array('max_length' => 255),
+      'default_widget' => 'text_textfield',
+      'default_formatter' => 'text_default', // This doesn't *have* to be the same name as default_widget's value, this is only coincidence
     ),
     'tableau_public_sheets' => array(
       'label' => t('Tableau Sheets'),
@@ -27,22 +27,13 @@ function tableau_public_field_info() {
 }
 
 /**
- * Implements hook_field_widget_info().
+ * Implements hook_field_widget_info_alter().
  */
-function tableau_public_field_widget_info() {
-  return array(
-    'tableau_public_info' => array(
-      'label' => 'Tableau Visualization',
-      'field types' => array('tableau_public_info'),
-      'multiple values' => FALSE,
-    ),
-    'tableau_public_sheets' => array(
-      'label' => 'Tableau Sheets',
-      'field types' => array('tableau_public_sheets'),
-      'multiple values' => TRUE,
-    ),
-  );
+function tableau_public_field_widget_info_alter(&$info) {
+  // Let a new field type re-use an existing widget.
+  $info['text_textfield']['field types'][] = 'tableau_public_info';
 }
+
 
 /**
  * Implements hook_field_is_empty().
