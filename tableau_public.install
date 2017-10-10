@@ -43,6 +43,10 @@ function tableau_public_field_schema($field) {
           'length' => '256',
           'not null' => TRUE,
         ),
+        'mobile' => array(
+          'type' => 'int',
+          'not null' => FALSE,
+        ),
       );
       break;
   }

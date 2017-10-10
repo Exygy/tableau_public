@@ -13,15 +13,27 @@ function tableau_public_field_info() {
       'label' => t('Tableau Visualization'),
       'description' => t("Basic information about a Tableau viz"),
       'settings' => array('max_length' => 255),
-      'default_widget' => 'text_textfield',
-      'default_formatter' => 'text_default', // This doesn't *have* to be the same name as default_widget's value, this is only coincidence
+      'default_widget' => 'tableau_public_info',
+      'default_formatter' => 'tableau_public_info', // This doesn't *have* to be the same name as default_widget's value, this is only coincidence
     ),
     'tableau_public_sheets' => array(
       'label' => t('Tableau Sheets'),
       'description' => t("Create a list of individual sheets within a Tableau viz"),
-      'settings' => array('allowed_values' => array(), 'allowed_values_function' => ''),
       'default_widget' => 'tableau_public_sheets',
       'default_formatter' => 'tableau_public_sheets',
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function tableau_public_field_widget_info() {
+  return array(
+    'tableau_public_sheets' => array(
+      'label' => 'Tableau Sheets',
+      'field types' => array('tableau_public_sheets'),
+      'multiple values' => TRUE,
     ),
   );
 }
@@ -34,14 +46,62 @@ function tableau_public_field_widget_info_alter(&$info) {
   $info['text_textfield']['field types'][] = 'tableau_public_info';
 }
 
+/**
+ * Implements HOOK_FIELD_WIDGET_FORM().
+ */
+function tableau_public_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  dsm($items, 'items');
+  dsm($field, 'field');
+  dsm($delta, 'delta');
+  dsm($instance, '$instance');
+  dsm($element, '$element');
+  switch ($instance['widget']['type']) {
+    case 'tableau_public_sheets':
+      // Custom definition for sheet name text field
+      $value = isset($items[$delta]['name']) ? $items[$delta]['name'] : '';
+      $element['name'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-sheet'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Sheet name',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
+      // Custom definition for mobile layout boolean checkbox
+      $value = isset($items[$delta]['mobile']) ? $items[$delta]['mobile'] : '';
+      $element['mobile'] = array(
+        '#type'             => 'checkbox',
+        '#default_value'    => $value,
+        '#on_value'         => 'yes',
+        '#off_value'        => 'no',
+        '#title'            => 'Mobile layout',
+        '#value_key'        => 'mobile',
+      );
+      break;
+  }
+  dsm($element, '$element');
+  return $element;
+}
 
 /**
  * Implements hook_field_is_empty().
  */
 function tableau_public_field_is_empty($item, $field) {
-  $temp = array_keys($field);
-  $key = array_shift($temp);
-  return empty($item[$key]);
+  dsm($item, 'empty item');
+  dsm($field, 'empty item');
+  // has the user checked off the checkbox?
+  if (empty($item['tableau_public_sheets'])) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
