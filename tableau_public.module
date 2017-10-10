@@ -50,11 +50,6 @@ function tableau_public_field_widget_info_alter(&$info) {
  * Implements HOOK_FIELD_WIDGET_FORM().
  */
 function tableau_public_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  dsm($items, 'items');
-  dsm($field, 'field');
-  dsm($delta, 'delta');
-  dsm($instance, '$instance');
-  dsm($element, '$element');
   switch ($instance['widget']['type']) {
     case 'tableau_public_sheets':
       // Custom definition for sheet name text field
@@ -95,10 +90,8 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
  * Implements hook_field_is_empty().
  */
 function tableau_public_field_is_empty($item, $field) {
-  dsm($item, 'empty item');
-  dsm($field, 'empty item');
   // has the user checked off the checkbox?
-  if (empty($item['tableau_public_sheets'])) {
+  if (empty($item['name'])) {
     return TRUE;
   }
   return FALSE;
