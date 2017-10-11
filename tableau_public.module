@@ -220,65 +220,106 @@ function tableau_public_field_formatter_view($entity_type, $entity, $field, $ins
   return $element;
 }
 
+/**
+ * Implements hook_field_prepare_view().
+ *
+ * When you load a field, check to see if it's a Tableau field.
+ * If it is, then automatically load the javascripts and
+ * populate jQuery.extend().
+ */
+function tableau_public_field_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items) {
+//  dsm($field);
+  if ($field['type'] == 'tableau_public_info') {
+    drupal_set_message("yay it's tableau!");
+//    dsm($items);
+    tableau_public_add_viz($items);
+  } elseif ($field['type'] == 'tableau_public_sheets') {
+//    tableau_public_add_sheets($items);
+  }
+}
 
 /**
- * Grabs data from node fields; adds to Drupal.setting js object.
+ * Grabs viz data from node fields; adds to Drupal.setting js object.
+ * @TODO: refactor
  *
  * @param int $nid
  *   Integer that refers to a node ID.  Function will automatically pull the
  *   correct fields from the node using the nid.
  */
-function tableau_public_add_viz($nid) {
+function tableau_public_add_viz($items) {
+  // Load javascript files now
   drupal_add_js('https://public.tableau.com/javascripts/api/tableau-2.min.js', array('type' => 'external', 'scope' => 'footer'));
-  drupal_add_js('tableau-interactive.js', array('type' => 'file', 'scope' => 'footer'));
+  drupal_add_js(drupal_get_path('module', 'tableau_public') . '/tableau-interactive.js', array('type' => 'file', 'scope' => 'footer'));
 
-  // store tableau viz, sheets, & mobile config for jQuery.extend
-  $node = node_load($nid);
+  // check to see if any data has already been captured
   $tableau_data = array();
+  $javascript = drupal_add_js();
+  dsm($javascript['settings'], 'this is what we already have');
+  if ($javascript['settings']['tableau_data']) {
+    array_push($tableau_data, $javascript['settings']['tableau_data']);
+  }
 
-  // check all interactives on the page, see if any of them are Tableau
-  foreach ($node->field_chart['und'] as $item) {
-    $value = $item['value'];
-    $fc_wrapper = entity_load('field_collection_item', array($value));
-    $loaded = $fc_wrapper[$value];
-
-    // only grab it if it's tableau
-    if (!empty($loaded->field_tableau)) {
+  // there should only be one tableau viz, but iterate just in case
+  $key = key($items);
+  dsm($items[$key], 'items');
+  foreach ($items[$key] as $item) {
       // Interactive title
-      $title = $loaded->field_interactive_title['und'][0]['safe_value'];
+      $title = $item['title'];
       // Unique identifier to create a placeholder div for Tableau
-      $shorty = $loaded->field_interactive['und'][0]['safe_value'];
+      $shorty = $item['short'];
       // Boolean variable to determine whether this Tableau interactive should
       // have a dynamic title
-      $dynamic = $loaded->field_dynamic_title['und'][0]['value'];
-      $sheets = array();
-
-      // individual Tableau sheets are stored as a field collection within a
-      // field collection.  Go through each sheet individually.
-      foreach ($loaded->field_tableau_sheets['und'] as $sheet_reference) {
-        $sheet_id = $sheet_reference['value'];
-        $sheet = entity_load('field_collection_item',
-          array($sheet_id));
-        array_push($sheets, array(
-          'name'   => $sheet[$sheet_id]->field_sheet_url['und'][0]['safe_value'],
-          'phone_layout' => $sheet[$sheet_id]->field_phone_layout['und'][0]['value']
-        ));
-      }
-
+      $dynamic = $item['dynamic'];
       // We have a single Tableau viz url, with an array of individual sheets.
       // Add this to the array of Tableau data
-      $tableau_viz = $loaded->field_tableau['und'][0]['safe_value'];
+      $tableau_viz = $item['viz'];
 
-      array_push($tableau_data, array(
-        'title'         => $title,
-        'id'            => $shorty,
-        'url'           => $tableau_viz,
-        'dynamic_title' => $dynamic,
-        'sheets'        => $sheets
-      ));
-    }
+      $result = array(
+        $shorty => array(
+          'title'         => $title,
+          'url'           => $tableau_viz,
+          'dynamic_title' => $dynamic,
+        )
+      );
+      dsm($result, 'pushing this');
+      array_push($tableau_data, $result);
   }
 
   // Finally, push the tableau_data array to jQuery.extend(Drupal.settings)
+  dsm($tableau_data, 'result');
   drupal_add_js(array('tableau_data' => $tableau_data), 'setting');
+}
+
+/**
+ * Grabs sheet data from node fields; adds to Drupal.setting js object.
+ * @TODO: refactor
+ *
+ * @param int $nid
+ *   Integer that refers to a node ID.  Function will automatically pull the
+ *   correct fields from the node using the nid.
+ */
+function tableau_public_add_sheets($items) {
+  // store tableau viz, sheets, & mobile config for jQuery.extend
+  $node = node_load($nid);
+  $tableau_data = array();
+  $sheets = array();
+
+  // individual Tableau sheets are stored as a field collection within a
+  // field collection.  Go through each sheet individually.
+  foreach ($items as $sheet_reference) {
+    $sheet_id = $sheet_reference['value'];
+    $sheet = entity_load('field_collection_item',
+      array($sheet_id));
+    array_push($sheets, array(
+      'name'   => $sheet[$sheet_id]->field_sheet_url['und'][0]['safe_value'],
+      'phone_layout' => $sheet[$sheet_id]->field_phone_layout['und'][0]['value']
+    ));
+  }
+
+  array_push($tableau_data, array(
+    'sheets'        => $sheets
+  ));
+
+  // Finally, push the tableau_data array to jQuery.extend(Drupal.settings)
+  drupal_add_js(array('tableau_sheets' => $sheets), 'setting');
 }
