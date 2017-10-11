@@ -4,7 +4,8 @@
   */
   $(function() {
     // Check if there is any Tableau interactive data on this page
-    console.log("here's what we have so far", Drupal.settings.tableau_data);
+    console.log("tableau_data", Drupal.settings.tableau_data);
+    console.log("tableau_sheets", Drupal.settings.tableau_sheets);
     if (Drupal.settings.tableau_data && Drupal.settings.tableau_data.length > 0) {
       var vizzesData = Drupal.settings.tableau_data;
       var vizzes = {};
