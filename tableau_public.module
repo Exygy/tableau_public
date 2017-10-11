@@ -221,6 +221,41 @@ function tableau_public_field_formatter_view($entity_type, $entity, $field, $ins
 }
 
 /**
+ * Implements hook_preprocess_node().
+ *
+ * When you load a node, check to see if there's any Tableau info on it.
+ * If there is, then automatically load the javascripts and
+ * populate jQuery.extend().
+ */
+function tableau_public_preprocess_node(&$vars) {
+    dsm($vars, 'tableau_public_preprocess_node');
+  $fields = field_info_instances("node", "demo");
+  dsm($fields, 'field list');
+}
+
+/**
+ * Implements hook_node_view_alter().
+ *
+ * When you load a node, check to see if there's any Tableau info on it.
+ * If there is, then automatically load the javascripts and
+ * populate jQuery.extend().
+ */
+function tableau_public_node_view_alter(&$build) {
+//    dsm($build, 'tableau_public_node_view_alter');
+}
+
+/**
+ * Implements hook_preprocess_field().
+ *
+ * When you load a field, check to see if it's a Tableau field.
+ * If it is, then automatically load the javascripts and
+ * populate jQuery.extend().
+ */
+function tableau_public_preprocess_field(&$variables, $hook) {
+  //  dsm($variables, 'variables');
+}
+
+/**
  * Implements hook_field_prepare_view().
  *
  * When you load a field, check to see if it's a Tableau field.
@@ -229,6 +264,9 @@ function tableau_public_field_formatter_view($entity_type, $entity, $field, $ins
  */
 function tableau_public_field_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items) {
   if ($field['type'] == 'tableau_public_info') {
+//    dsm($entity_type, 'entity type');
+//    dsm($entities, '$entities');
+//    dsm($instances, '$instances');
     tableau_public_add_viz($items);
   } elseif ($field['type'] == 'tableau_public_sheets') {
     tableau_public_add_sheets($items);
