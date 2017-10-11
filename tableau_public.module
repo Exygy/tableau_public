@@ -35,15 +35,12 @@ function tableau_public_field_widget_info() {
       'field types' => array('tableau_public_sheets'),
       'multiple values' => TRUE,
     ),
+    'tableau_public_info' => array(
+      'label' => 'Tableau Viz information',
+      'field types' => array('tableau_public_info'),
+      'multiple values' => TRUE,
+    ),
   );
-}
-
-/**
- * Implements hook_field_widget_info_alter().
- */
-function tableau_public_field_widget_info_alter(&$info) {
-  // Let a new field type re-use an existing widget.
-  $info['text_textfield']['field types'][] = 'tableau_public_info';
 }
 
 /**
@@ -80,9 +77,78 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
         '#title'            => 'Mobile layout',
         '#value_key'        => 'mobile',
       );
+
+      break;
+    case 'tableau_public_info':
+      // Custom definition for viz name text field
+      $value = isset($items[$delta]['title']) ? $items[$delta]['title'] : '';
+      $element['title'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-title'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Viz title',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
+      // Custom definition for dynamic title boolean checkbox
+      $value = isset($items[$delta]['dynamic']) ? $items[$delta]['dynamic'] : '';
+      $element['dynamic'] = array(
+        '#type'             => 'checkbox',
+        '#default_value'    => $value,
+        '#on_value'         => 'yes',
+        '#off_value'        => 'no',
+        '#title'            => 'Dynamic title',
+        '#value_key'        => 'dynamic',
+      );
+
+      // Custom definition for short code text field
+      $value = isset($items[$delta]['short']) ? $items[$delta]['short'] : '';
+      $element['short'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-short'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Short code',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
+      // Custom definition for short code text field
+      $value = isset($items[$delta]['viz']) ? $items[$delta]['viz'] : 'http://';
+      $element['viz'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-viz'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Viz url',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
       break;
   }
-  dsm($element, '$element');
+
+  dsm($element, 'element');
   return $element;
 }
 
@@ -90,11 +156,10 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
  * Implements hook_field_is_empty().
  */
 function tableau_public_field_is_empty($item, $field) {
-  // has the user checked off the checkbox?
-  if (empty($item['name'])) {
-    return TRUE;
-  }
-  return FALSE;
+  $temp = array_keys($field['columns']);
+  $key = array_shift($temp);
+  dsm(array($item, $field, $temp, $key, empty($item[$key])), 'empty');
+  return empty($item[$key]);
 }
 
 /**

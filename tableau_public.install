@@ -24,15 +24,19 @@ function tableau_public_field_schema($field) {
           'length' => '255',
           'not null' => TRUE,
         ),
+        'dynamic' => array(
+          'type' => 'int',
+          'not null' => FALSE,
+        ),
         'short' => array(
           'type' => 'varchar',
           'length' => '255',
-          'not null' => TRUE,
+          'not null' => FALSE,
         ),
         'viz' => array(
           'type' => 'varchar',
           'length' => '255',
-          'not null' => TRUE,
+          'not null' => FALSE,
         ),
       );
       break;
