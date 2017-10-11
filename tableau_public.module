@@ -38,9 +38,21 @@ function tableau_public_field_widget_info() {
     'tableau_public_info' => array(
       'label' => 'Tableau Viz information',
       'field types' => array('tableau_public_info'),
-      'multiple values' => TRUE,
+      'multiple values' => FALSE,
     ),
   );
+}
+
+/**
+ * Implements hook__form_field_ui_field_edit_form_alter().
+ *
+ * Sets the sheets field to default to unlimited
+ */
+function tableau_public_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
+  if ($form['#field']['type'] == 'tableau_public_sheets') {
+    // Hide the cardinality setting on the field settings for properties fields.
+    $form['field']['cardinality']['#default_value'] = FIELD_CARDINALITY_UNLIMITED;
+  }
 }
 
 /**
@@ -148,7 +160,6 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
       break;
   }
 
-  dsm($element, 'element');
   return $element;
 }
 
@@ -158,7 +169,6 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
 function tableau_public_field_is_empty($item, $field) {
   $temp = array_keys($field['columns']);
   $key = array_shift($temp);
-  dsm(array($item, $field, $temp, $key, empty($item[$key])), 'empty');
   return empty($item[$key]);
 }
 
