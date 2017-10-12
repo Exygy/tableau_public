@@ -4,7 +4,6 @@
   */
   $(function() {
     // Check if there is any Tableau interactive data on this page
-    console.log("tableau_data", Drupal.settings.tableau_data);
     if (Drupal.settings.tableau_data && Drupal.settings.tableau_data.length > 0) {
       var vizzesData = Drupal.settings.tableau_data;
       var vizzes = {};
@@ -15,16 +14,18 @@
 
       var $titleTemplate = $('<h3 class="chart-title">');
       var $buttonGroupWrapperTemplate = $('<div class="btn-group btn-group-justified margin-top margin-bottom">');
-      var $buttonTemplate = $('<a class="btn btn-primary btn-fix">');
+      var $buttonTemplate = $('<a class="btn btn-primary btn-fix k-button">');
 
       // Go through each Tableau interactive's data and render it on the page
       _.each(vizzesData, function(data) {
         var $interactiveWrapper = $('#' + data.id),
-            vizID,
-            $viz,
-            hasSheets = data.sheets && data.sheets.length > 0,
-            btnClass = data.id + '-btn',
-            $title;
+          vizID,
+          $viz,
+          multipleSheets = data.sheets && data.sheets.length > 1,
+          btnClass = data.id + '-btn',
+          $title;
+
+        data.dynamic_title = data.dynamic_title.to_i;
 
         // Remove any parameters from url
         data.url = data.url.replace(/\?.*/, '');
@@ -34,7 +35,7 @@
         $interactiveWrapper.append($title);
 
         // If there are multiple sheets, create buttons for each sheet
-        if (hasSheets) {
+        if (multipleSheets) {
           var $buttonGroupWrapper = $buttonGroupWrapperTemplate.clone();
           $buttonGroupWrapper.attr('data-viz-url', data.url);
 
@@ -97,8 +98,11 @@
           // button as active and update the title if dynamic
           if (!thisViz.data.initialized) {
             thisViz.data.initialized = true;
-            var button = thisViz.data.$buttons.find('[data-sheet-name="' + thisViz.data.activeSheet + '"]');
-            button.addClass('active');
+
+            if (multipleSheets) {
+              var button = thisViz.data.$buttons.find('[data-sheet-name="' + thisViz.data.activeSheet + '"]');
+              button.addClass('active');
+            }
 
             if (thisViz.data.dynamic_title) {
               thisViz.data.$title.text(thisViz.data.title + ' — ' + thisViz.data.activeSheet);
@@ -142,7 +146,7 @@
 
       // Re-render the viz
       var allOptions = _.assign({}, baseVizOptions, vizData.options);
-      new tableau.Viz(document.getElementById('ec1c_viz'), vizData.url, allOptions);
+      new tableau.Viz(vizData.vizDOMElement, vizData.url, allOptions);
     }
   });
 })(jQuery);
