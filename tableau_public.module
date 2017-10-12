@@ -1,8 +1,8 @@
 <?php
 /**
-* @file
-* Loads visualizations from Tableau Public with a simple url
-*/
+ * @file
+ * Loads visualizations from Tableau Public with a simple url
+ */
 
 /**
  * Implements hook_field_info().
@@ -197,7 +197,7 @@ function tableau_public_field_formatter_view($entity_type, $entity, $field, $ins
   switch ($display['type']) {
     case 'tableau_public_info_default':
       $shorty = $items[0]['short'];
-      $element[0]['#markup'] = "<div id='" . $shorty . "_viz'></div>";
+      $element[0]['#markup'] = "<div id='" . $shorty . "'></div>";
       break;
   }
 
@@ -250,13 +250,15 @@ function tableau_public_check($vars) {
       case 'tableau_public_info':
         // yay it's the viz info!
         $field_name = $field['field_name'];
-        $viz = $vars[$field_name][0];
+        // Sometimes the field values are stored under ['und'], sometimes not
+        //        dsm($vars[$field_name]);
+        $viz = $vars['elements']['#entity']->{$field_name}['und'][0];
         $is_tableau = TRUE;
         break;
       case 'tableau_public_sheets':
         // give a sheet
         $field_name = $field['field_name'];
-        $sheets = $vars[$field_name]['und'];
+        $sheets = $vars['elements']['#entity']->{$field_name}['und'];
         $is_tableau = TRUE;
         break;
     }
