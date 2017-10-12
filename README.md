@@ -78,6 +78,7 @@ The functions to actually display a Tableau viz have been abstracted, so you can
 
 Future features:
 - Drush command to load enquire.js
+- Embed field help text in module
 
 # Credits
 

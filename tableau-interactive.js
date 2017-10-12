@@ -25,7 +25,7 @@
           btnClass = data.id + '-btn',
           $title;
 
-        data.dynamic_title = data.dynamic_title.to_i;
+        data.dynamic_title = parseInt(data.dynamic_title);
 
         // Remove any parameters from url
         data.url = data.url.replace(/\?.*/, '');
