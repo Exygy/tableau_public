@@ -207,12 +207,34 @@ function tableau_public_field_formatter_view($entity_type, $entity, $field, $ins
 /**
  * Implements hook_preprocess_node().
  *
- * When you load a node, check to see if there's any Tableau info on it.
- * If there is, then automatically load the javascripts and
- * populate jQuery.extend().
+ * Triggers tableau_public_check()
+ */
+function tableau_public_preprocess_node(&$vars) {
+  tableau_public_check($vars);
+}
+
+/**
+ * Implements hook_preprocess_entity().
+ *
+ * Now, for non-node entities!
+ * Triggers tableau_public_check()
  */
 function tableau_public_preprocess_entity(&$vars) {
-  // get list of fields for this node
+  tableau_public_check($vars);
+}
+
+/**
+ * Implements hook_preprocess_node().
+ *
+ * When you load an entity, check to see if there's any Tableau info on it.
+ * If there is, then automatically load the javascripts and
+ * populate jQuery.extend().
+ *
+ * @param array $vars
+ *    Array of variables from hook_preprocess_node() or hook_preprocess_entity()
+ */
+function tableau_public_check($vars) {
+  // get list of fields
   $entity_type = $vars['elements']['#entity_type'];
   $bundle = $vars['elements']['#bundle'];
   $fields = field_info_instances($entity_type, $bundle);
@@ -228,7 +250,7 @@ function tableau_public_preprocess_entity(&$vars) {
       case 'tableau_public_info':
         // yay it's the viz info!
         $field_name = $field['field_name'];
-        $viz = $vars[$field_name]['und'][0];
+        $viz = $vars[$field_name][0];
         $is_tableau = TRUE;
         break;
       case 'tableau_public_sheets':
@@ -260,9 +282,12 @@ function tableau_public_preprocess_entity(&$vars) {
  *    - name: the human readable title for the individual sheet
  *    - mobile: whether this sheet has a mobile layout
  */
-function tableau_public_add_viz($viz, $sheets) {
+function tableau_public_add_viz($viz, &$sheets) {
+  // Load the necessary libraries
+  $path = drupal_get_path('module', 'tableau_public');
   drupal_add_js('https://public.tableau.com/javascripts/api/tableau-2.min.js', array('type' => 'external', 'scope' => 'footer'));
-  drupal_add_js('tableau-interactive.js', array('type' => 'file', 'scope' => 'footer'));
+  drupal_add_js($path . '/tableau-interactive.js', array('type' => 'file', 'scope' => 'footer'));
+  drupal_add_js('/sites/all/libraries/enquire.min.js', array('type' => 'file', 'scope' => 'footer'));
 
   $tableau_data = array();
 
