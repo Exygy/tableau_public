@@ -173,50 +173,34 @@ function tableau_public_field_is_empty($item, $field) {
 }
 
 /**
- * Implements hook_field_field_formatter_info().
+ * Implements hook_field_formatter_info().
  */
-function tableau_public_field_field_formatter_info() {
+function tableau_public_field_formatter_info() {
   return array(
-    'tableau_public_info' => array(
-      'label' => t('Tableau Visualization'),
+    'tableau_public_info_default' => array(
+      'label' => t('Default'),
       'field types' => array('tableau_public_info'),
     ),
-    'tableau_public_sheets' => array(
-      'label' => t('Tableau Sheets'),
+    'tableau_public_sheets_default' => array(
+      'label' => t('Default'),
       'field types' => array('tableau_public_sheets'),
     ),
   );
 }
 
 /**
- * Implements hook_field_field_formatter_view().
+ * Implements hook_field_formatter_view().
  */
 function tableau_public_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
 
   switch ($display['type']) {
-    case 'tableau_public_info':
-      $headers = array(
-        t('Title'),
-        t('Dynamic Title'),
-        t('Short Code'),
-        t('Vizualization URL'),
-      );
-
-      $element[0]['#theme'] = 'table';
-      $element[0]['#data'] = array('header' => $headers, 'rows' => $items);
-      break;
-
-    case 'tableau_public_sheets':
-      $headers = array(
-        t('Name'),
-        t('Mobile layout'),
-      );
-
-      $element[0]['#theme'] = 'table';
-      $element[0]['#data'] = array('header' => $headers, 'rows' => $items);
+    case 'tableau_public_info_default':
+      $shorty = $items[0]['short'];
+      $element[0]['#markup'] = "<div id='" . $shorty . "_viz'></div>";
       break;
   }
+
   return $element;
 }
 
