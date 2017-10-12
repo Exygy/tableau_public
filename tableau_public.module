@@ -211,7 +211,7 @@ function tableau_public_field_formatter_view($entity_type, $entity, $field, $ins
  * If there is, then automatically load the javascripts and
  * populate jQuery.extend().
  */
-function tableau_public_preprocess_node(&$vars) {
+function tableau_public_preprocess_entity(&$vars) {
   // get list of fields for this node
   $entity_type = $vars['elements']['#entity_type'];
   $bundle = $vars['elements']['#bundle'];
