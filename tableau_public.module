@@ -252,13 +252,13 @@ function tableau_public_check($vars) {
         $field_name = $field['field_name'];
         // Sometimes the field values are stored under ['und'], sometimes not
         //        dsm($vars[$field_name]);
-        $viz = $vars['elements']['#entity']->{$field_name}['und'][0];
+        $viz = $vars[$field_name][0] ? $vars[$field_name][0] : $vars['elements']['#entity']->{$field_name}['und'][0];
         $is_tableau = TRUE;
         break;
       case 'tableau_public_sheets':
         // give a sheet
         $field_name = $field['field_name'];
-        $sheets = $vars['elements']['#entity']->{$field_name}['und'];
+        $sheets = $vars[$field_name][0] ? $vars[$field_name][0] : $vars['elements']['#entity']->{$field_name}['und'];
         $is_tableau = TRUE;
         break;
     }
