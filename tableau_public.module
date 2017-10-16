@@ -234,10 +234,18 @@ function tableau_public_preprocess_entity(&$vars) {
  *    Array of variables from hook_preprocess_node() or hook_preprocess_entity()
  */
 function tableau_public_check($vars) {
-  // get list of fields
+  // set up useful variables for this function
   $entity_type = $vars['elements']['#entity_type'];
   $bundle = $vars['elements']['#bundle'];
   $fields = field_info_instances($entity_type, $bundle);
+  if ($entity_type == 'node') {
+    $nid = $vars['nid'];
+    $vid = $vars['vid'];
+    $entity = node_load($nid, $vid);
+  } else {
+    $id = $vars['id'];
+    $entity = entity_load($entity_type, array($id));
+  }
 
   // set up variables just in case we find something
   $is_tableau = FALSE;
@@ -252,13 +260,23 @@ function tableau_public_check($vars) {
         $field_name = $field['field_name'];
         // Sometimes the field values are stored under ['und'], sometimes not
         //        dsm($vars[$field_name]);
-        $viz = $vars[$field_name][0] ? $vars[$field_name][0] : $vars['elements']['#entity']->{$field_name}['und'][0];
+//        $viz = !empty($vars[$field_name][0]) ? $vars[$field_name][0] : $vars['elements']['#entity']->{$field_name}['und'][0];
+//        $viz = $entity[$id]->$field_name['und'][0];
+//        $viz = $vars->get($field_name)->getValue();
+//        $viz = $entity->get($field_name)->getValue();
+//        dsm($viz);
+        $viz_all = field_get_items($entity_type, $entity, $field_name);
+        $viz = $viz_all[0];
         $is_tableau = TRUE;
         break;
       case 'tableau_public_sheets':
         // give a sheet
         $field_name = $field['field_name'];
-        $sheets = $vars[$field_name][0] ? $vars[$field_name][0] : $vars['elements']['#entity']->{$field_name}['und'];
+//        $sheets = !empty($vars[$field_name][0]) ? $vars[$field_name][0] : $vars['elements']['#entity']->{$field_name}['und'];
+//        $sheets = $entity[$id]->$field_name['und'];
+//        $viz = $vars->get($field_name)->getValue();
+        $sheets = field_get_items($entity_type, $entity, $field_name);
+//        dsm($vars);
         $is_tableau = TRUE;
         break;
     }
