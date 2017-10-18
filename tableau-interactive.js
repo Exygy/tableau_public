@@ -17,7 +17,7 @@
       var $buttonTemplate = $('<a class="btn btn-primary btn-fix k-button">');
 
       // Go through each Tableau interactive's data and render it on the page
-      _.each(vizzesData, function(data) {
+      $.each(vizzesData, function(index, data) {
         var $interactiveWrapper = $('#' + data.id),
           vizID,
           $viz,
@@ -40,7 +40,7 @@
           $buttonGroupWrapper.attr('data-viz-url', data.url);
 
           // Create each button
-          _.each(data.sheets, function(sheet) {
+          $.each(data.sheets, function(index, sheet) {
             var $button = $buttonTemplate.clone();
             $button.addClass(btnClass);
             $button.attr('data-sheet-name', sheet.name);
@@ -84,7 +84,13 @@
           var thisViz = e.$1;
           var thisVizUrl = thisViz._impl.$1n.$2;
           $(thisViz.getParentElement()).css('min-height', 0);
-          thisViz.data = _.find(vizzesData, {url: thisVizUrl});
+          thisViz.data = {};
+          $.each(vizzesData, function(index, vizData) {
+            if (vizData.url == thisVizUrl) {
+              thisViz.data = vizData;
+              return false;
+            }
+          });
 
           // If there was previously an active sheet for this viz, activate
           // that sheet again
@@ -122,20 +128,24 @@
     // Manage responsive behavior for already initialized vizzes
     enquire.register("screen and (max-width: 767px)", {
       match : function() {
-        _.each(vizzes, function(vizObj, vizUrl) {
-          var vizData = _.find(vizzesData, {url: vizUrl});
-          vizData.options.device = 'phone';
-          renderViz(vizData, vizObj);
-        });
+        reRenderAllVizzes('phone');
       },
       unmatch : function() {
-        _.each(vizzes, function(vizObj, vizUrl) {
-          var vizData = _.find(vizzesData, {url: vizUrl});
-          vizData.options.device = 'desktop';
-          renderViz(vizData, vizObj);
-        });
+        reRenderAllVizzes('desktop');
       }
     });
+
+    function reRenderAllVizzes(device) {
+      $.each(vizzes, function(vizUrl, vizObj) {
+        $.each(vizzesData, function(index, vizData) {
+          if (vizData.url == vizUrl) {
+            vizData.options.device = device;
+            renderViz(vizData, vizObj);
+            return false;
+          }
+        });
+      });
+    }
 
     function renderViz(vizData, oldViz) {
       // Delete old viz if present
@@ -144,8 +154,15 @@
         oldViz.dispose();
       }
 
+      // Collect options
+      var allOptions = $.extend(true, {}, baseVizOptions);
+      for (var prop in vizData.options) {
+        if (vizData.options.hasOwnProperty(prop)) {
+          allOptions[prop] = vizData.options[prop];
+        }
+      }
+
       // Re-render the viz
-      var allOptions = _.assign({}, baseVizOptions, vizData.options);
       new tableau.Viz(vizData.vizDOMElement, vizData.url, allOptions);
     }
   });
