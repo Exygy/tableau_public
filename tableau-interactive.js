@@ -53,7 +53,7 @@
           data.$buttons = $buttonGroupWrapper;
 
           // Set button click handler
-          $('body').on('click', '.' + btnClass, function() {
+          jQuery('body').on('click', '.' + btnClass, function() {
             $(this).siblings('a').removeClass('active');
             $(this).addClass('active');
             var sheetName = $(this).data('sheet-name');

@@ -1,3 +1,4 @@
 name = Tableau Public
 description = Loads visualizations from Tableau Public with a simple url.
 core = 7.x
+dependencies[] = jquery_update:jquery_update
