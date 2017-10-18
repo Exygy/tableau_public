@@ -16,6 +16,12 @@ We will respond to issues reported in both locations.
 - [Tableau dashboard module](https://www.drupal.org/project/tableau_dashboard): Pulls in Tableau dashboards only.
   - *How this module is different:* Tableau Public pulls in sheets, not dashboards, and presents custom buttons to switch between sheets.  The dashboard module simply presents dashboards as-is. 
   
+## Requirements:
+
+- Drupal 7
+- jquery_update (need at least jQuery 1.7)
+- enquire.js (optional)
+  
 # Installation
 
 ## 1. Install module
