@@ -4,7 +4,7 @@
  * You can use this as-is, or replace with classes from your own theme.
  */
 
-.tableau-public-button-group a {
+.tableau-public-default {
     border: 1px solid black;
     border-radius: 5px;
     color: black;
@@ -13,8 +13,8 @@
     margin-right: 10px;
 }
 
-.tableau-public-button-group a:hover,
-.tableau-public-button-group a.active {
+.tableau-public-default:hover,
+.tableau-public-default.active {
     color: white;
     background-color: cornflowerblue;
     cursor: pointer;
