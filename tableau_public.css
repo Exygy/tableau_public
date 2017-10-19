@@ -1,0 +1,21 @@
+/*
+ * Demo styling for Tableau Public.
+ *
+ * You can use this as-is, or replace with classes from your own theme.
+ */
+
+.tableau-public-button-group a {
+    border: 1px solid black;
+    border-radius: 5px;
+    color: black;
+    background-color: #eee;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.tableau-public-button-group a:hover,
+.tableau-public-button-group a.active {
+    color: white;
+    background-color: cornflowerblue;
+    cursor: pointer;
+}
