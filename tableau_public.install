@@ -28,6 +28,16 @@ function tableau_public_field_schema($field) {
           'type' => 'int',
           'not null' => FALSE,
         ),
+        'button_group_classes' => array(
+          'type' => 'varchar',
+          'length' => '255',
+          'not null' => FALSE,
+        ),
+        'button_classes' => array(
+          'type' => 'varchar',
+          'length' => '255',
+          'not null' => FALSE,
+        ),
         'short' => array(
           'type' => 'varchar',
           'length' => '255',

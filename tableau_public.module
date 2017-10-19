@@ -121,6 +121,42 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
         '#value_key'        => 'dynamic',
       );
 
+      // Custom definition for button group classes text field
+      $value = isset($items[$delta]['button_group_classes']) ? $items[$delta]['button_group_classes'] : '';
+      $element['button_group_classes'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-button_group_classes'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Button group classes',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
+      // Custom definition for button classes text field
+      $value = isset($items[$delta]['button_classes']) ? $items[$delta]['button_classes'] : '';
+      $element['button_classes'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-button_classes'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Button classes',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
       // Custom definition for short code text field
       $value = isset($items[$delta]['short']) ? $items[$delta]['short'] : '';
       $element['short'] = array(
@@ -296,6 +332,8 @@ function tableau_public_check($vars) {
  *    - title: the human readable title for this viz
  *    - short: the short code.  This tells the javascript where to insert the viz
  *    - dynamic: indicate whether the title should change based on the sheet
+ *    - button_group_classes: custom button group classes
+ *    - button_classes: custom button classes
  *    - viz: the url to Tableau Public
  * @param array $sheets
  *    Array that describes the individual sheets to display.  Each item includes:
@@ -318,16 +356,21 @@ function tableau_public_add_viz($viz, &$sheets) {
   // Boolean variable to determine whether this Tableau interactive should
   // have a dynamic title
   $dynamic = $viz['dynamic'];
+  // Custom button classes
+  $button_group_classes = $viz['button_group_classes'];
+  $button_classes = $viz['button_classes'];
   // We have a single Tableau viz url, with an array of individual sheets.
   // Add this to the array of Tableau data
   $tableau_viz = $viz['viz'];
 
   array_push($tableau_data, array(
-    'title'         => $title,
-    'id'            => $shorty,
-    'url'           => $tableau_viz,
-    'dynamic_title' => $dynamic,
-    'sheets'        => $sheets
+    'title'                => $title,
+    'id'                   => $shorty,
+    'url'                  => $tableau_viz,
+    'button_group_classes' => $button_group_classes,
+    'button_classes'       => $button_classes,
+    'dynamic_title'        => $dynamic,
+    'sheets'               => $sheets
   ));
 
   // Finally, push the tableau_data array to jQuery.extend(Drupal.settings)
