@@ -13,8 +13,8 @@
       };
 
       var $titleTemplate = $('<h3 class="chart-title">');
-      var $buttonGroupWrapperTemplate = $('<div class="tableau-public-button-group">');
-      var $buttonTemplate = $('<a class="tableau-public-default">');
+      var $buttonGroupWrapperTemplate = $('<div class="">');
+      var $buttonTemplate = $('<a class="">');
 
       // Go through each Tableau interactive's data and render it on the page
       $.each(vizzesData, function(index, data) {

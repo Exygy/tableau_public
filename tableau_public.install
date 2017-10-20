@@ -28,16 +28,6 @@ function tableau_public_field_schema($field) {
           'type' => 'int',
           'not null' => FALSE,
         ),
-        'button_group_classes' => array(
-          'type' => 'varchar',
-          'length' => '255',
-          'not null' => FALSE,
-        ),
-        'button_classes' => array(
-          'type' => 'varchar',
-          'length' => '255',
-          'not null' => FALSE,
-        ),
         'short' => array(
           'type' => 'varchar',
           'length' => '255',
@@ -64,7 +54,13 @@ function tableau_public_field_schema($field) {
       );
       break;
   }
+
   return array(
     'columns' => $columns,
   );
+}
+
+function tableau_public_update_7101($schema) {
+  variable_set('button_group_classes', 'tableau-public-button-group');
+  variable_set('button_classes', 'tableau-public-default');
 }
