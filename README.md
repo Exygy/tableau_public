@@ -1,6 +1,6 @@
 # Tableau Public
 
-This is a simple module that pulls in Tableau visualizations that are hosted on [Tableau Public](https://public.tableau.com/en-us/s/).
+This module allows easy display of Tableau visualizations without any coding required. A non-technical business user can create and modify visualizations on Tableau Public and easily publish live to a public website.
 
 This module lives in two places:
 

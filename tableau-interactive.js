@@ -13,8 +13,8 @@
       };
 
       var $titleTemplate = $('<h3 class="chart-title">');
-      var $buttonGroupWrapperTemplate = $('<div class="btn-group btn-group-justified margin-top margin-bottom">');
-      var $buttonTemplate = $('<a class="btn btn-primary btn-fix k-button">');
+      var $buttonGroupWrapperTemplate = $('<div class="">');
+      var $buttonTemplate = $('<a class="">');
 
       // Go through each Tableau interactive's data and render it on the page
       $.each(vizzesData, function(index, data) {
@@ -37,12 +37,14 @@
         // If there are multiple sheets, create buttons for each sheet
         if (multipleSheets) {
           var $buttonGroupWrapper = $buttonGroupWrapperTemplate.clone();
+          $buttonGroupWrapper.attr('class', $buttonGroupWrapper.attr('class') + ' ' + data.button_group_classes);
           $buttonGroupWrapper.attr('data-viz-url', data.url);
 
           // Create each button
+          var $customButtonTemplate = $buttonTemplate.clone();
+          $customButtonTemplate.attr('class', $customButtonTemplate.attr('class') + ' ' + btnClass + ' ' + data.button_classes);
           $.each(data.sheets, function(index, sheet) {
-            var $button = $buttonTemplate.clone();
-            $button.addClass(btnClass);
+            var $button = $customButtonTemplate.clone();
             $button.attr('data-sheet-name', sheet.name);
             $button.text(sheet.name);
             $buttonGroupWrapper.append($button.clone());

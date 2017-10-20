@@ -5,6 +5,85 @@
  */
 
 /**
+ * Implements hook_menu().
+ */
+function tableau_public_menu() {
+  $items = array();
+
+  $items['admin/structure/tableau_public'] = array(
+    'title' => 'Tableau Public',
+    'description' => 'Global configuration for the Tableau Public module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tableau_public_form'),
+    'access arguments' => array('Tableau Public configuration'),
+  );
+
+  return $items;
+}
+
+/**
+ * The form for editing header format settings.
+ *
+ * @param array $form_state
+ *   A keyed array containing the current state of the form.
+ *
+ * @ingroup forms
+ */
+function tableau_public_form($form, &$form_state) {
+  $form = array();
+  $explanation = "<p>If your Tableau viz contains multiple sheets or dashboards, this module can create buttons to switch between them.  Use this settings page to add classes which you can style using your own css.</p><p>These settings will apply to all the Tableau visualizations on your site.</p>";
+
+  $form['global'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Global Settings'),
+    '#description'  => t($explanation),
+  );
+  $form['global']['button_group_classes'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Button Group Classes'),
+    '#default_value' => variable_get('button_group_classes'),
+    '#description'   => t('Add a class to the button group.'),
+  );
+  $form['global']['button_classes'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Button Classes'),
+    '#default_value' => variable_get('button_classes'),
+    '#description'   => t('Add a class to individual buttons.'),
+  );
+
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Submit'));
+
+  return $form;
+}
+
+/**
+ * Stores the settings for the form.
+ *
+ * @param array $form_state
+ *   A keyed array containing the current state of the form.
+ *
+ * @ingroup forms
+ */
+function tableau_public_form_submit($form, &$form_state) {
+  variable_set('button_group_classes', $form_state['values']['button_group_classes']);
+  variable_set('button_classes', $form_state['values']['button_classes']);
+
+  drupal_set_message(t('Your configuration has been saved.'));
+}
+
+/**
+ * Implements hook_permission().
+ */
+function tableau_public_permission() {
+  return array(
+    'Tableau Public module configuration' => array(
+      'title' => t('Tableau Public'),
+      'description' => t('Permission to access the config page for the Tableau Public module'),
+    ),
+  );
+}
+
+/**
  * Implements hook_field_info().
  */
 function tableau_public_field_info() {
@@ -296,6 +375,8 @@ function tableau_public_check($vars) {
  *    - title: the human readable title for this viz
  *    - short: the short code.  This tells the javascript where to insert the viz
  *    - dynamic: indicate whether the title should change based on the sheet
+ *    - button_group_classes: custom button group classes
+ *    - button_classes: custom button classes
  *    - viz: the url to Tableau Public
  * @param array $sheets
  *    Array that describes the individual sheets to display.  Each item includes:
@@ -318,16 +399,21 @@ function tableau_public_add_viz($viz, &$sheets) {
   // Boolean variable to determine whether this Tableau interactive should
   // have a dynamic title
   $dynamic = $viz['dynamic'];
+  // Custom button classes
+  $button_group_classes = variable_get('button_group_classes');
+  $button_classes = variable_get('button_classes');
   // We have a single Tableau viz url, with an array of individual sheets.
   // Add this to the array of Tableau data
   $tableau_viz = $viz['viz'];
 
   array_push($tableau_data, array(
-    'title'         => $title,
-    'id'            => $shorty,
-    'url'           => $tableau_viz,
-    'dynamic_title' => $dynamic,
-    'sheets'        => $sheets
+    'title'                => $title,
+    'id'                   => $shorty,
+    'url'                  => $tableau_viz,
+    'button_group_classes' => $button_group_classes,
+    'button_classes'       => $button_classes,
+    'dynamic_title'        => $dynamic,
+    'sheets'               => $sheets
   ));
 
   // Finally, push the tableau_data array to jQuery.extend(Drupal.settings)

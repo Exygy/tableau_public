@@ -54,7 +54,13 @@ function tableau_public_field_schema($field) {
       );
       break;
   }
+
   return array(
     'columns' => $columns,
   );
+}
+
+function tableau_public_update_7101($schema) {
+  variable_set('button_group_classes', 'tableau-public-button-group');
+  variable_set('button_classes', 'tableau-public-default');
 }
