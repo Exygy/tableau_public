@@ -273,14 +273,16 @@ function tableau_public_field_formatter_info() {
 function tableau_public_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
 
-  switch ($display['type']) {
-    case 'tableau_public_info_default':
-      $shorty = $items[0]['short'];
-      $element[0]['#markup'] = "<div id='" . $shorty . "'></div>";
-      break;
+  if (!empty($items)) {
+    switch ($display['type']) {
+      case 'tableau_public_info_default':
+        $shorty = $items[0]['short'];
+        $element[0]['#markup'] = "<div id='" . $shorty . "'></div>";
+        return $element;
+        break;
+    }
   }
 
-  return $element;
 }
 
 /**
@@ -312,8 +314,7 @@ function tableau_public_load_thing($vars) {
     $vid = $vars['vid'];
     $entity = node_load($nid, $vid);
   } else {
-    $id = $vars['id'];
-    $entity = entity_load($entity_type, array($id));
+    $entity = $vars['elements']['#entity'];
   }
 
   return $entity;
