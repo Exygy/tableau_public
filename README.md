@@ -67,6 +67,12 @@ Save your content and the Tableau viz should automagically appear.
 
 # Advanced Usage
 
+## Style your own
+
+If your Tableau viz contains multiple sheets or dashboards, you can display these as native tab buttons (see above).  The module comes with some basic css and default classes for the button group and individual buttons.  However, you can modify these to pick up classes from your own theme.  Visit `/admin/structure/tableau_public` to change the default classes.
+
+## Code your own
+
 The functions to actually display a Tableau viz have been abstracted, so you can use them in your own custom themes or modules.  There are two functions you can use:
 - `tableau_public_check($vars)`: This is a simple function to check whether a Tableau viz is present in an entity.  Currently runs on `hook_preprocess_node()` and `hook_preprocess_entity()`.  But you can run it yourself on any function you want.  Just pass the `$vars` array from your preprocess function.
 - `tableau_public_add_viz($viz, $sheets)`: This is where the magic happens.  It requires two arguments:

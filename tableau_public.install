@@ -60,6 +60,17 @@ function tableau_public_field_schema($field) {
   );
 }
 
+/*
+ * Set global variables on install
+ */
+function tableau_public_install() {
+  variable_set('button_group_classes', 'tableau-public-button-group');
+  variable_set('button_classes', 'tableau-public-default');
+}
+
+/*
+ * In case you didn't get it on install
+ */
 function tableau_public_update_7101($schema) {
   variable_set('button_group_classes', 'tableau-public-button-group');
   variable_set('button_classes', 'tableau-public-default');
