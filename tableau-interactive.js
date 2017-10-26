@@ -1,9 +1,9 @@
 (function($) {
   /*
-  Render any available Tableau interactives.
+  Render any available Tableau vizzes.
   */
   $(function() {
-    // Check if there is any Tableau interactive data on this page
+    // Check if there is any Tableau viz data on this page
     if (Drupal.settings.tableau_data && Drupal.settings.tableau_data.length > 0) {
       var vizzesData = Drupal.settings.tableau_data;
       var vizzes = {};
@@ -16,9 +16,9 @@
       var $buttonGroupWrapperTemplate = $('<div class="">');
       var $buttonTemplate = $('<a class="">');
 
-      // Go through each Tableau interactive's data and render it on the page
+      // Go through each Tableau viz's data and render it on the page
       $.each(vizzesData, function(index, data) {
-        var $interactiveWrapper = $('#' + data.id),
+        var $vizWrapper = $('#' + data.id),
           vizID,
           $viz,
           multipleSheets = data.sheets && data.sheets.length > 1,
@@ -32,7 +32,7 @@
 
         // Create the viz title
         $title = $titleTemplate.clone().text(data.title);
-        $interactiveWrapper.append($title);
+        $vizWrapper.append($title);
 
         // If there are multiple sheets, create buttons for each sheet
         if (multipleSheets) {
@@ -50,8 +50,8 @@
             $buttonGroupWrapper.append($button.clone());
           });
 
-          // Add the buttons above the Tableau interactive container
-          $interactiveWrapper.append($buttonGroupWrapper);
+          // Add the buttons above the Tableau viz container
+          $vizWrapper.append($buttonGroupWrapper);
           data.$buttons = $buttonGroupWrapper;
 
           // Set button click handler
@@ -69,7 +69,7 @@
             viz.getWorkbook().activateSheetAsync(sheetName);
             viz.data.activeSheet = sheetName;
 
-            // If the dynamic title option is set for this interactive,
+            // If the dynamic title option is set for this viz,
             // update the title with the current sheet's name
             if (viz.data.dynamic_title) {
               viz.data.$title.text(viz.data.title + ' — ' + sheetName);
@@ -80,7 +80,7 @@
         // Initialize the viz
         vizID = data.id + '_viz';
         $viz = $('<div id="' + vizID + '" class="tableau-viz">');
-        $interactiveWrapper.append($viz);
+        $vizWrapper.append($viz);
         var options = {device: $(window).width() < 768 ? 'phone' : 'desktop'};
         options.onFirstInteractive = function(e) {
           var thisViz = e.$1;
@@ -121,7 +121,7 @@
         };
         data.options = options;
         data.vizDOMElement = $viz.get(0);
-        data.$interactiveWrapper = $interactiveWrapper;
+        data.$vizWrapper = $vizWrapper;
         data.$title = $title;
         renderViz(data);
       });
