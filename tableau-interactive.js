@@ -79,7 +79,7 @@
 
         // Initialize the viz
         vizID = data.id + '_viz';
-        $viz = $('<div id="' + vizID + '" class="tableau-viz">');
+        $viz = $('<div id="' + vizID + '" class="tableau-viz ' + data.viz_wrapper_classes + '">');
         $vizWrapper.append($viz);
         var options = {device: $(window).width() < 768 ? 'phone' : 'desktop'};
         options.onFirstInteractive = function(e) {

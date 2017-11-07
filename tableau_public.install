@@ -38,6 +38,11 @@ function tableau_public_field_schema($field) {
           'length' => '255',
           'not null' => FALSE,
         ),
+        'viz_wrapper_classes' => array(
+          'type' => 'varchar',
+          'length' => '255',
+          'not null' => FALSE,
+        ),
       );
       break;
     case 'tableau_public_sheets':
