@@ -218,7 +218,7 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
         '#suffix'         => '</div>'
       );
 
-      // Custom definition for short code text field
+      // Custom definition for viz url text field
       $value = isset($items[$delta]['viz']) ? $items[$delta]['viz'] : 'http://';
       $element['viz'] = array(
         '#attributes'     => array(
@@ -230,6 +230,24 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
         '#size'           => 60,
         '#maxlength'      => 255,
         '#title'          => 'Viz url',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
+      // Custom definition for viz wrapper classes text field
+      $value = isset($items[$delta]['viz_wrapper_classes']) ? $items[$delta]['viz_wrapper_classes'] : '';
+      $element['viz_wrapper_classes'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-viz-wrapper-classes'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Custom viz wrapper classes',
         '#default_value'  => $value,
         '#attached'       => array(),
         '#prefix'         => '<div>',
@@ -378,6 +396,7 @@ function tableau_public_check($vars) {
  *    - dynamic: indicate whether the title should change based on the sheet
  *    - button_group_classes: custom button group classes
  *    - button_classes: custom button classes
+ *    - viz_wrapper_classes: custom viz wrapper classes
  *    - viz: the url to Tableau Public
  * @param array $sheets
  *    Array that describes the individual sheets to display.  Each item includes:
@@ -403,6 +422,8 @@ function tableau_public_add_viz($viz, &$sheets) {
   // Custom button classes
   $button_group_classes = variable_get('button_group_classes');
   $button_classes = variable_get('button_classes');
+  // Custom classes to be added to the viz wrapper div
+  $viz_wrapper_classes = $viz['viz_wrapper_classes'];
   // We have a single Tableau viz url, with an array of individual sheets.
   // Add this to the array of Tableau data
   $tableau_viz = $viz['viz'];
@@ -413,6 +434,7 @@ function tableau_public_add_viz($viz, &$sheets) {
     'url'                  => $tableau_viz,
     'button_group_classes' => $button_group_classes,
     'button_classes'       => $button_classes,
+    'viz_wrapper_classes'  => $viz_wrapper_classes,
     'dynamic_title'        => $dynamic,
     'sheets'               => $sheets
   ));
