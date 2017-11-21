@@ -2,12 +2,7 @@
 
 /**
  * @file
- * Install file for the link module.
- */
-
-/**
- * Upgrade notes:
- * Things we need to make sure work when upgrading from Drupal 6 to Drupal 7:
+ * Install file for the tableau_public module.
  */
 
 /**
@@ -74,9 +69,44 @@ function tableau_public_install() {
 }
 
 /*
- * In case you didn't get it on install
+ * Add global config settings (In case you didn't get it on install)
  */
 function tableau_public_update_7101($schema) {
   variable_set('button_group_classes', 'tableau-public-button-group');
   variable_set('button_classes', 'tableau-public-default');
+}
+
+/**
+ * Add viz_wrapper_classes to tableau_public_info field
+ */
+function tableau_public_update_7102(&$sandbox) {
+  // see https://drupal.stackexchange.com/questions/30301/update-field-schema
+
+  // Get a list of all fields on the site
+  $fields = field_info_fields();
+  foreach ($fields as $field_name => $field) {
+    // Find uses of the tableau_public_info field
+    if ($field['type'] == 'tableau_public_info' && $field['storage']['type'] == 'field_sql_storage') {
+      // Define the new schema
+      $spec = array(
+        'description' => "Viz wrapper class",
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => FALSE,
+      );
+
+      foreach ($field['storage']['details']['sql'] as $type => $table_info) {
+        foreach ($table_info as $table_name => $columns) {
+          // Apply the new schema to existing fields
+          $column_name = _field_sql_storage_columnname($field_name, 'viz_wrapper_classes');
+          db_add_field($table_name, $column_name, $spec);
+          db_add_index($table_name, $column_name, array($column_name));
+          drupal_set_message('Updated field schema for Tableau Public');
+        }
+      }
+    }
+  }
+
+  // Clear cache
+  field_cache_clear();
 }
