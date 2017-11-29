@@ -355,7 +355,6 @@ function tableau_public_check($vars) {
   $fields = field_info_instances($entity_type, $bundle);
 
   // set up variables just in case we find something
-  $is_tableau = FALSE;
   $viz = array();
   $sheets = array();
 
@@ -368,20 +367,18 @@ function tableau_public_check($vars) {
         $entity = tableau_public_load_thing($vars);
         $viz_all = field_get_items($entity_type, $entity, $field_name);
         $viz = $viz_all[0];
-        $is_tableau = TRUE;
         break;
       case 'tableau_public_sheets':
         // give a sheet
         $field_name = $field['field_name'];
         $entity = tableau_public_load_thing($vars);
         $sheets = field_get_items($entity_type, $entity, $field_name);
-        $is_tableau = TRUE;
         break;
     }
   }
 
   // only do this if Tableau fields were found
-  if ($is_tableau) {
+  if (!empty($viz)) {
     tableau_public_add_viz($viz, $sheets);
   }
 }
