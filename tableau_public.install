@@ -17,7 +17,7 @@ function tableau_public_field_schema($field) {
         'title' => array(
           'type' => 'varchar',
           'length' => '255',
-          'not null' => TRUE,
+          'not null' => FALSE,
         ),
         'dynamic' => array(
           'type' => 'int',
@@ -106,6 +106,38 @@ function tableau_public_update_7102(&$sandbox) {
       }
     }
   }
+
+  // Clear cache
+  field_cache_clear();
+}
+
+/**
+ * Viz title is no longer required
+ */
+function tableau_public_update_7103(&$sandbox) {
+  // see https://api.drupal.org/api/drupal/includes%21database%21database.inc/function/db_change_field/7.x
+
+  // Get a list of all fields on the site
+  $fields = field_info_fields();
+  foreach ($fields as $field_name => $field) {
+    // Find uses of the tableau_public_info field
+    if ($field['type'] == 'tableau_public_info' && $field['storage']['type'] == 'field_sql_storage') {
+      foreach ($field['storage']['details']['sql'] as $type => $table_info) {
+        foreach ($table_info as $table_name => $columns) {
+          // Apply the new schema to existing fields
+          $column_name = _field_sql_storage_columnname($field_name, 'title');
+
+          db_change_field($table_name, $column_name, $column_name, array(
+            'type' => 'varchar',
+            'length' => '255',
+            'not null' => FALSE,
+          ));
+        }
+      }
+    }
+  }
+
+  drupal_set_message('Updated field schema for Tableau Public');
 
   // Clear cache
   field_cache_clear();

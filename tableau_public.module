@@ -171,6 +171,24 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
 
       break;
     case 'tableau_public_info':
+      // Custom definition for short code text field
+      $value = isset($items[$delta]['short']) ? $items[$delta]['short'] : '';
+      $element['short'] = array(
+        '#attributes'     => array(
+          'class'         => array('edit-short'),
+          'title'         => '',
+          'rel'           => '',
+        ),
+        '#type'           => 'textfield',
+        '#size'           => 60,
+        '#maxlength'      => 255,
+        '#title'          => 'Short code',
+        '#default_value'  => $value,
+        '#attached'       => array(),
+        '#prefix'         => '<div>',
+        '#suffix'         => '</div>'
+      );
+
       // Custom definition for viz name text field
       $value = isset($items[$delta]['title']) ? $items[$delta]['title'] : '';
       $element['title'] = array(
@@ -198,24 +216,6 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
         '#off_value'        => 'no',
         '#title'            => 'Dynamic title',
         '#value_key'        => 'dynamic',
-      );
-
-      // Custom definition for short code text field
-      $value = isset($items[$delta]['short']) ? $items[$delta]['short'] : '';
-      $element['short'] = array(
-        '#attributes'     => array(
-          'class'         => array('edit-short'),
-          'title'         => '',
-          'rel'           => '',
-        ),
-        '#type'           => 'textfield',
-        '#size'           => 60,
-        '#maxlength'      => 255,
-        '#title'          => 'Short code',
-        '#default_value'  => $value,
-        '#attached'       => array(),
-        '#prefix'         => '<div>',
-        '#suffix'         => '</div>'
       );
 
       // Custom definition for viz url text field
@@ -262,11 +262,23 @@ function tableau_public_field_widget_form(&$form, &$form_state, $field, $instanc
 
 /**
  * Implements hook_field_is_empty().
+ *
+ * hook_field_is_empty() returns TRUE if the field is empty, and FALSE if the
+ * field is not empty.
+ *
+ * If it's the viz title, return FALSE no matter what.  Otherwise, check to see
+ * whether the field is empty.
  */
 function tableau_public_field_is_empty($item, $field) {
   $temp = array_keys($field['columns']);
   $key = array_shift($temp);
-  return empty($item[$key]);
+
+  if ($key == 'title') {
+    dsm('force return FALSE');
+    return FALSE;
+  } else {
+    return empty($item[$key]);
+  }
 }
 
 /**
@@ -410,7 +422,7 @@ function tableau_public_add_viz($viz, &$sheets) {
   $tableau_data = array();
 
   // Interactive title
-  $title = $viz['title'];
+  $title = $viz['title'] ? $viz['title'] : 'empty';
   // Unique identifier to create a placeholder div for Tableau
   $shorty = $viz['short'];
   // Boolean variable to determine whether this Tableau interactive should
